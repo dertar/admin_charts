@@ -1,28 +1,40 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div :id="$options.name">
+    <charts-view/>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import ChartsView from "@/views/ChartsView.vue";
 
 export default {
-  name: 'app',
+  name: "app",
   components: {
-    HelloWorld
+    ChartsView
+  },
+  methods: {
+    dispatchInfo: async function() {
+      var browser = require("@/browsers.js");
+      let self = this;
+
+      this.axios({
+        method: "put",
+        url: "http://127.0.0.1:5000/charts",
+        data: {
+          browser: browser.BrowserDetect.browser,
+          mobile: browser.isMobile.any(),
+          new: true
+        }
+      }).catch(function(e) {
+        self.$snackbar.open({ type: "is-danger", message: e.toString() });
+      });
+    }
+  },
+  beforeMount: function() {
+    this.dispatchInfo();
   }
-}
+};
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
 </style>
